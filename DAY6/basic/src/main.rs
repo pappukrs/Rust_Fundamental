@@ -1,19 +1,14 @@
-use chrono::prelude::*;
+use reqwest; // Make sure `reqwest` is imported.
+use tokio; // For asynchronous runtime.
 
-fn main() {
-    let now = Utc::now();
-    println!("Current time: {}", now);
+#[tokio::main] // Marks the main function as asynchronous.
+async fn main() -> Result<(), reqwest::Error> {
+    // Make an HTTP request
+    let response = reqwest::get("https://httpbin.org/ip")
+        .await?
+        .text()
+        .await?;
 
-    // Use the new method `with_ymd_and_hms` and match on the result
-    match Utc.with_ymd_and_hms(2024, 1, 1, 0, 0, 0) {
-        chrono::LocalResult::Single(date) => {
-            println!("New Year 2024: {}", date);
-        }
-        chrono::LocalResult::None => {
-            println!("Invalid date or time");
-        }
-        chrono::LocalResult::Ambiguous(_, _) => {
-            println!("Ambiguous date/time");
-        }
-    }
+    println!("Response: {}", response);
+    Ok(())
 }
