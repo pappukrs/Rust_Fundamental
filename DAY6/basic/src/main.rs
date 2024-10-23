@@ -1,39 +1,22 @@
-use clap::{Parser, Subcommand}; // Make sure this line ends with a semicolon
+use serde::{Serialize, Deserialize};
 
-
-#[derive(Parser)]
-#[command(name = "Todo CLI")]
-#[command(about = "A command line interface")]
-struct Cli { 
-    #[command(subcommand)]
-    command: Commands,
+#[derive(Serialize, Deserialize, Debug)]
+struct Task {
+    description: String,
+    done: bool,
 }
 
-// Define the available commands
-#[derive(Subcommand)]
-enum Commands {
-    Add { description: String },
-    View,
-    Remove { index: usize },
-}
-
-// Main function
 fn main() {
-    // Parse the command-line arguments
-    let cli = Cli::parse();
- 
-    // Print the parsed command for demonstration purposes
-    match cli.command {
-        Commands::Add { ref description } => {
-            println!("Adding task: {}", description);
-        }
-        Commands::View => {
-            println!("Viewing tasks...");
-            // Here, you can add logic to display tasks
-        }
-        Commands::Remove { index } => {
-            println!("Removing task at index: {}", index);
-            // Here, you can add logic to remove a task
-        }
-    }
+    // Serialize
+    let task = Task { description: "Learn Serde".to_string(), done: true };
+    let json = serde_json::to_string(&task).unwrap();
+    println!("Serialized to JSON: {}", json);
+    //response -->   Serialized to JSON: {"description":"Learn Serde","done":true}
+
+
+    // Deserialize
+    let json_str = r#"{"description":"Learn Serde","done":false}"#;
+    let deserialized_task: Task = serde_json::from_str(json_str).unwrap();
+    println!("Deserialized: {:?}", deserialized_task);
+    //response --> Deserialized: Task { description: "Learn Serde", done: true}
 }
